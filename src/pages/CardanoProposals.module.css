@@ -1,0 +1,169 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    margin: 1rem 0;
+
+}
+
+.radioGroup {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.radioInput {
+    accent-color: #0070f3;
+}
+
+.submitButton {
+    background-color: #0070f3;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 20px;
+    justify-content: space-between;
+}
+
+.submitButton:hover {
+    background-color: #005bb5;
+}
+
+.contents h1 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.contents h2 {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.contents h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.contents {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+    align-items: center;
+    justify-content: center;
+}
+
+.titleDiv {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.titleDiv h1 {
+    font-size: 2rem;
+    color: #333;
+}
+
+.proposalsContainer {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+.proposalsContainer ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.proposalsContainer li {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 0;
+}
+
+.proposalsContainer li:last-child {
+    border-bottom: none;
+}
+
+.proposalsContainer h2 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.proposalsContainer p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.proposalsContainer a {
+    color: #0070f3;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.proposalsContainer a:hover {
+    text-decoration: underline;
+}
+
+.proposalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.proposalInfo {
+    flex: 1;
+}
+
+.proposalLink {
+    flex-shrink: 0;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.noProposals {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.proposalsContainer li {
+    padding-top: 40px;
+    padding-bottom: 40px;   
+}
+
+.connectWallet {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+}

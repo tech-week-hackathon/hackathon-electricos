@@ -1,48 +1,21 @@
 import { useState } from "react";
-import type { NextPage } from "next";
 import { useWallet } from '@meshsdk/react';
+import styles from './CardanoProposals.module.css';
 import { CardanoWallet } from '@meshsdk/react';
-import styles from './RadioInput.module.css';
-import { mockDatabase } from "../data.ts";
-import fs from "fs";
-import path from "path";
-
-type VotingRecord = {
-  wallet_address: string; // billetera
-  proposal_tx_hash: string;  // propuesta
-  vote: string; // voto
-};
 
 
-
-const ProposalsPage = ({ proposals, error, children }) => {
+const ProposalsPage = ({ proposals, error }) => {
 
   const { connected, wallet } = useWallet();
   const [assets, setAssets] = useState<null | any>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
   const [selectedOption, setSelectedOption] = useState<Record<string, string>>({});
-
-
-/*
-
-  const handleSubmit = (tx_hash: string, event: React.FormEvent) => {
-      event.preventDefault();
-      const objeto =  { wallet_address: "pruebadewallet", proposal_tx_hash: tx_hash, vote: selectedOption[tx_hash] }
-      console.log(tx_hash, selectedOption[tx_hash])
-      mockDatabase.push(objeto);
-      console.log(mockDatabase); 
-      // fs.writeFileSync("../data.ts", JSON.stringify(mockDatabase, null, 2) , 'utf-8');
-
-      // mandar a la api
-  };
-
-*/
 
   const handleSubmit = async (tx_hash: string, event: React.FormEvent) => {
     event.preventDefault()
     try {
-      const objeto =  { wallet_address: "pruebadewallet", proposal_tx_hash: tx_hash, vote: selectedOption[tx_hash] }
+      const walletAddress = await wallet.getChangeAddress();
+      const objeto =  { wallet_address: walletAddress , proposal_tx_hash: tx_hash, vote: selectedOption[tx_hash] }
       console.log(objeto)
       const response = await fetch('/api/api', {
         method: 'POST',
@@ -69,67 +42,88 @@ const handleInputChange = (tx_hash: string, value: string ) => {
 
   return (
 
-    <div>
-      <h1>Cardano Governance Proposals</h1>
+    <div className={styles.contents}>
+
+      <div className={styles.titleDiv}>
+        <h1>Cardano Governance Proposals</h1>
+      </div>
+      <div className={styles.connectWallet}>
+        <h1>Connect Wallet</h1>
+          <CardanoWallet />
+      </div>
+    {connected && (
+    <>
+    <div className={styles.proposalsContainer}>
       {proposals && proposals.length > 0 ? (
         <ul>
           {proposals.map((proposal) => (
             <li key={proposal.tx_hash}>
-              <h2>{proposal.title}</h2>
-              <p><strong>ID:</strong> {proposal.tx_hash}</p>
-              <a href={`https://cardanoscan.io/transaction/${proposal.tx_hash}?tab=govActions`}>Link to cardanoscan</a>
+              <div className={styles.proposalHeader}>
+                <div className={styles.proposalInfo}>
+                  <h2>{proposal.title}</h2>
+                  <p><strong>ID:</strong> {proposal.tx_hash}</p>
+                </div>
+                <div className={styles.proposalLink}>
+                  <a href={`https://cardanoscan.io/transaction/${proposal.tx_hash}?tab=govActions`} target="_blank" rel="noopener noreferrer">View on Cardanoscan</a>
+                </div>
+              </div>
               <form onSubmit={(e) => handleSubmit(proposal.tx_hash, e)} className={styles.form}>
-            <div className={styles.radioGroup}>
-                <label className={styles.radioLabel}>
-                    <input
+                <div className={styles.buttonsContainer}>
+                  <div className={styles.radioGroup}>
+                    <label className={styles.radioLabel}>
+                      <input
                         type="radio"
                         name="choice"
                         value="yes"
                         checked={selectedOption[proposal.tx_hash] === 'yes'}
                         onChange={(e) => handleInputChange(proposal.tx_hash, e.target.value)}
                         className={styles.radioInput}
-                    />
-                    Yes
-                </label>
-                <label className={styles.radioLabel}>
-                    <input
+                      />
+                      Yes
+                    </label>
+                    <label className={styles.radioLabel}>
+                      <input
                         type="radio"
                         name="choice"
                         value="no"
                         checked={selectedOption[proposal.tx_hash] === 'no'}
                         onChange={(e) => handleInputChange(proposal.tx_hash, e.target.value)}
                         className={styles.radioInput}
-                    />
-                    No
-                </label>
-                <label className={styles.radioLabel}>
-                    <input
+                      />
+                      No
+                    </label>
+                    <label className={styles.radioLabel}>
+                      <input
                         type="radio"
                         name="choice"
                         value="abstain"
                         checked={selectedOption[proposal.tx_hash] === 'abstain'}
                         onChange={(e) => handleInputChange(proposal.tx_hash, e.target.value)}
                         className={styles.radioInput}
-                    />
-                    Abstain
-                </label>
-            </div>
-            <button type="submit" className={styles.submitButton}>
-                Submit
-            </button>
-        </form>
+                      />
+                      Abstain
+                    </label>
+                  </div>
+                  <button type="submit" className={styles.submitButton}>
+                    Submit
+                  </button>
+                </div>
+              </form>
             </li>
           ))}
         </ul>
       ) : (
-        <p>No proposals found.</p>
+        <p className={styles.noProposals}>No proposals found.</p>
       )}
-
-
     </div>
+    </>
+    )} { !connected && (
+      <p className={styles.noProposals}>Please connect your wallet to view proposals.</p>
+    
+    )}
 
 
-
+  </div>
   );
 };
 
