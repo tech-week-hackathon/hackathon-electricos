@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet } from '@meshsdk/react';
 import styles from './CardanoProposals.module.css';
 import { CardanoWallet } from '@meshsdk/react';
+import { BrowserWallet } from "@meshsdk/core";
 
 const navigateTo = (path: string) => {
   window.location
@@ -18,11 +19,43 @@ const ProposalsPage = ({ proposals, error }) => {
   const [assets, setAssets] = useState<null | any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedOption, setSelectedOption] = useState<Record<string, string>>({});
+  const [votes, setVotes] = useState<null | any>(null);
+  const [walletAdd, setWalletAdd] = useState<string>('');
+
+
+  useEffect(() => {
+    // Fetch the votes from the database calling api/getVotes.ts
+    const fetchVotes = async () => {
+      const response = await fetch('/api/getVotes');
+      const data = await response.json();
+      setVotes(data);
+    }
+
+    fetchVotes();
+  }, []);
+
+  // useEffect to change wallet address when the wallet connects or disconnecs
+  useEffect(() => {
+    if (connected) {
+      wallet.getRewardAddresses().then((addresses) => {
+        setWalletAdd(addresses[0]);
+      });
+    }
+  }, [connected, wallet]);
+
+
+  const hasVoted = (proposal_tx_hash: string, wallet_address: string) => {
+    if (!votes)
+      return null;
+
+    const vote = votes.find((vote) => vote.proposal_tx_hash === proposal_tx_hash && vote.wallet_address === wallet_address);
+    return vote ? vote.vote : null;
+  }
 
   const handleSubmit = async (tx_hash: string, event: React.FormEvent) => {
     event.preventDefault()
     try {
-      const walletAddress = await wallet.getChangeAddress();
+      const walletAddress = (await wallet.getRewardAddresses())[0];
       const objeto =  { wallet_address: walletAddress , proposal_tx_hash: tx_hash, vote: selectedOption[tx_hash] }
       console.log(objeto)
       const response = await fetch('/api/api', {
@@ -30,6 +63,19 @@ const ProposalsPage = ({ proposals, error }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(objeto),
       });
+
+      if (response.ok) {
+        const updatedVotes = await response.json();
+        setVotes((prevVotes) => {
+          const newVotes = [...prevVotes, ...updatedVotes];
+          console.log('Vote submitted successfully:', newVotes);
+          return newVotes;
+        });
+        setSelectedOption((prev) => ({
+          ...prev,
+          [tx_hash]: '',
+        }));
+      }
 
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -39,7 +85,7 @@ const ProposalsPage = ({ proposals, error }) => {
   const handleSubmitAll = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const walletAddress = await wallet.getChangeAddress();
+      const walletAddress = (await wallet.getRewardAddresses())[0];
       const promises = proposals.map(async (proposal) => {
         const objeto = {
           wallet_address: walletAddress,
@@ -59,6 +105,19 @@ const ProposalsPage = ({ proposals, error }) => {
       console.error('Error submitting all forms:', error);
     }
   };
+
+const handleClearAll = async () => {
+  // For all the proposals, set selected option to ''
+  setSelectedOption((prev) => {
+    const newSelectedOption = { ...prev };
+    proposals.forEach((proposal) => {
+      newSelectedOption[proposal.tx_hash] = '';
+    });
+    return newSelectedOption;
+  });
+
+
+}
 
 
 const handleInputChange = (tx_hash: string, value: string ) => {
@@ -106,15 +165,21 @@ const handleInputChange = (tx_hash: string, value: string ) => {
         <ul>
           {proposals.map((proposal) => (
             <li key={proposal.tx_hash}>
+              <div className={styles.abc}>
               <div className={styles.proposalHeader}>
                 <div className={styles.proposalInfo}>
                   <h2>{proposal.title}</h2>
                   <p><strong>ID:</strong> {proposal.tx_hash}</p>
                   <p><strong>Title: </strong>Estaría bueno obtener al menos el título de cada proposal.</p>
+
                 </div>
                 <div className={styles.proposalLink}>
                   <a href={`https://cardanoscan.io/transaction/${proposal.tx_hash}?tab=govActions`} target="_blank" rel="noopener noreferrer">View on Cardanoscan</a>
                 </div>
+              </div>
+              {votes.find((vote) => vote.proposal_tx_hash === proposal.tx_hash && vote.wallet_address === walletAdd) && (
+                    <p className={styles.alreadyVotedText}><strong>Already voted this proposal. You voted:</strong> {votes.find((vote) => vote.proposal_tx_hash === proposal.tx_hash && vote.wallet_address === walletAdd).vote}</p>
+                  )}
               </div>
               <form onSubmit={(e) => handleSubmit(proposal.tx_hash, e)} className={styles.form}>
                 <div className={styles.buttonsContainer}>
@@ -134,7 +199,11 @@ const handleInputChange = (tx_hash: string, value: string ) => {
                     ))}
                   </div>
                   <button type="submit" className={styles.submitButton}>
-                    Submit
+                    {hasVoted(proposal.tx_hash, walletAdd) ? (
+                      <span>Change Vote</span>
+                    ) : (
+                      "Submit"
+                    )}
                   </button>
                 </div>
               </form>
@@ -142,6 +211,12 @@ const handleInputChange = (tx_hash: string, value: string ) => {
           ))}
         </ul>
         <div className={styles.proposalsContainerFooter}>
+          <button 
+            onClick={handleClearAll} 
+            className={styles.clearAllButton}
+          >
+            Clear Selections
+          </button>
           <button 
             onClick={handleSubmitAll} 
             className={styles.submitAllButton}
@@ -186,6 +261,7 @@ export const getServerSideProps = async () => {
     }
 
     const data = await response.json();
+
     return { props: { proposals: data } };
   } catch (error) {
     return { props: { proposals: null, error: error.message } };

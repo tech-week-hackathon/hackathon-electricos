@@ -25,7 +25,7 @@ export default function handler(
 
   
   console.log("todo ok")
-  res.status(200).json({message: "vote data added succesfully"});
+  res.status(200).json(mockDatabase);
 }
 
 
