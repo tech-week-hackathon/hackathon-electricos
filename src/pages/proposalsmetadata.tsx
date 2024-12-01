@@ -1,41 +1,97 @@
 import React from 'react';
 
-const ProposalsMetadataPage = ({ proposals, error }) => {
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+// Add this interface before the component
+interface Proposal {
+  tx_hash: string;
+  details: {
+    json_metadata: {
+        body?: {
+            title: string;
+            abstract: string;
+            rationale: string;
+            motivation: string;
+        }
+    };
+  };
+}
 
-  return (
-  	<div>	
-              <p><strong>Hash:</strong> {proposals.tx_hash}</p>
-              <p><strong>Title:</strong> {proposals.json_metadata.body.title}</p>
-              <p><strong>Abstract:</strong> {proposals.json_metadata.body.abstract}</p>
-</div> 
- )
- }
+interface Props {
+  proposals: Proposal[];
+}
 
-export const getServerSideProps = async () => {
-  const url = 'https://cardano-mainnet.blockfrost.io/api/v0/governance/proposals/fff0df644d328a5367212f45bab59060bde3c4091dc96c723062896fd6197314/0/metadata';
+const Prueba = ({ proposals }: Props) => {
+    //console.log("Full proposals data:", JSON.stringify(proposals, null, 2));
+    //console.log("First proposal details:", proposals[0]);
+    
+    return (
+        <>  
+            {proposals && proposals.length > 0 ? (
+                <ul> 
+                    {proposals.map((proposal) => (
+                        <li key={proposal.tx_hash}>
+                            {JSON.stringify(proposal.details.json_metadata) && (
+                                <h1>{JSON.stringify(proposal.details.json_metadata.body?.title)}</h1>
+                            )}
+                            {JSON.stringify(proposal.details.json_metadata) && (
+                                <h1>{JSON.stringify(proposal.details.json_metadata.body?.abstract)}</h1>
+                            )}
+                            {JSON.stringify(proposal.details.json_metadata) && (
+                                <h4>{JSON.stringify(proposal.details.json_metadata.body?.rationale)}</h4>
+                            )}
+                            {JSON.stringify(proposal.details.json_metadata) && (
+                                <h4>{JSON.stringify(proposal.details.json_metadata.body?.motivation)}</h4>
+                            )}
+                        {proposal.tx_hash}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <h1>Todo mal</h1>
+            )}
+        </>
+    )
+}
+
+
+export async function getServerSideProps() {
+  const baseUrl = 'https://cardano-mainnet.blockfrost.io/api/v0/governance/proposals';
   const headers = {
     'Accept': 'application/json',
-    'project_id': 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO', // Replace with your actual project ID
+    'project_id': 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO',
   };
 
   try {
-    const response = await fetch(url, {
-      method: 'GET',
+    // First fetch all proposals
+    const response = await fetch(baseUrl, {
       headers: headers,
     });
+    const proposals = await response.json();
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // Then fetch details for each proposal
+    const proposalsWithDetails = await Promise.all(
+      proposals.map(async (proposal: Proposal) => {
+        const detailResponse = await fetch(
+          `${baseUrl}/${proposal.tx_hash}/0/metadata`,
+          { headers }
+        );
+        const details = await detailResponse.json();
+        return { ...proposal, details };
+      })
+    );
 
-    const data = await response.json();
-    return { props: { proposals: data } };
+    return {
+      props: {
+        proposals: proposalsWithDetails,
+      },
+    };
   } catch (error) {
-    return { props: { proposals: null, error: error.message } };
+    console.error('Error fetching proposals:', error);
+    return {
+      props: {
+        proposals: [],
+      },
+    };
   }
-};
+}
 
-export default ProposalsMetadataPage;
+export default Prueba;
