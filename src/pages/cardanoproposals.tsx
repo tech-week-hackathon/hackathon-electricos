@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useWallet } from '@meshsdk/react';
-import styles from './CardanoProposals.module.css';
+import styles from '../styles/CardanoProposals.module.css';
 import { CardanoWallet } from '@meshsdk/react';
 import { BrowserWallet } from "@meshsdk/core";
 
@@ -148,6 +148,9 @@ const handleInputChange = (tx_hash: string, value: string ) => {
                 </li>
                 <li>
                     <button onClick={() => navigateTo('/DReps')}>See DReps</button>
+                </li>
+                <li>
+                  <button onClick={() => navigateTo('/comparedreps')}>Compare DReps</button>
                 </li>
             </ul>
         </nav>

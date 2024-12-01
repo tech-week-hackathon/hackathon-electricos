@@ -1,7 +1,7 @@
 import { useWallet } from '@meshsdk/react';
 import { CardanoWallet } from '@meshsdk/react';
 import { useState, useEffect, useRef } from 'react'
-import styles from './DReps.module.css'
+import styles from '../styles/DReps.module.css'
 import { keepRelevant } from '@meshsdk/core';
 import { BlockfrostProvider, MeshTxBuilder } from "@meshsdk/core";
 
@@ -108,7 +108,7 @@ const DRepsPage = ({ dreps, proposals, error }) => {
     }
 
 
-    const getVotesOfDelegators = async (delegators: string[], proposal_tx_hash: string) => {
+    const getVotesOfDelegators = async (delegators: Object[], proposal_tx_hash: string) => {
       // Fetch the app api to get all the votes of a delegator.
       const response = await fetch('/api/getVotes');
       const data = await response.json();
@@ -117,10 +117,21 @@ const DRepsPage = ({ dreps, proposals, error }) => {
 
       // Filter the votes to get only the ones of the proposal.
       const proposalVotes = data.filter(vote => vote.proposal_tx_hash === proposal_tx_hash);
+      console.log(`ONLY VOTES OF THIS PROPOSAL: ${JSON.stringify(proposalVotes)}`)
+      console.log(`DELEGATORS: ${JSON.stringify(delegators)}`)
 
-      const yesVotes = proposalVotes.filter(vote => vote.vote === "yes");
-      const noVotes = proposalVotes.filter(vote => vote.vote === "no");
-      const abstainVotes = proposalVotes.filter(vote => vote.vote === "abstain");
+      // Fiter proposal votes so we only get the votes of the delegators.
+      const listOfDelegatorsWalletAddresses = delegators.map(delegator => delegator.address);
+      console.log(`LIST OF WALLET ADDRESSES OF DELEGATORS: ${JSON.stringify(listOfDelegatorsWalletAddresses)}`)
+
+
+      const delegatorVotes1 = proposalVotes.filter(vote => listOfDelegatorsWalletAddresses.includes(vote.wallet_address));
+
+      console.log(`ONLY VOTES OF THIS DREP DELEGATORS: ${JSON.stringify(delegatorVotes1)}` )
+
+      const yesVotes = delegatorVotes1.filter(vote => vote.vote === "yes");
+      const noVotes = delegatorVotes1.filter(vote => vote.vote === "no");
+      const abstainVotes = delegatorVotes1.filter(vote => vote.vote === "abstain");
 
       let delegatorVotes = {"yes": yesVotes.length, "no": noVotes.length, "abstain": abstainVotes.length};
 
@@ -278,6 +289,9 @@ const DRepsPage = ({ dreps, proposals, error }) => {
                 <li>
                     <button onClick={() => navigateTo('/DReps')}>See DReps</button>
                 </li>
+                <li>
+                  <button onClick={() => navigateTo('/comparedreps')}>Compare DReps</button>
+                </li>
             </ul>
         </nav>
     </header>
@@ -432,8 +446,6 @@ export const getServerSideProps = async () => {
     }
 
     const data = await response.json();
-    // console.log("AAA.")
-    // console.log(data);
 
     const responseProposals = await fetch('https://cardano-mainnet.blockfrost.io/api/v0/governance/proposals', {
         headers: {
@@ -442,9 +454,6 @@ export const getServerSideProps = async () => {
     })
     
     const proposals = await responseProposals.json();
-    // console.log("BBB.")
-    // console.log(proposals);
-
 
     return { props: { dreps: data, proposals: proposals } };
   } catch (error) {
@@ -453,47 +462,3 @@ export const getServerSideProps = async () => {
 };
 
 export default DRepsPage;
-
-
-//   const getDelegators = async () => {
-//     for (let drep of dreps) {
-//         const delegators = await getDelegatorsOf(drep.drep_id);
-//         setDelegator(prevState => ({
-//             ...prevState,
-//             [drep.drep_id]: delegators
-//         }));
-//     }
-//   }
-
-// const allDelegators = [];
-
-// for (let drep of data) {
-//     const delegators = await getDelegatorsOf(drep.drep_id);
-//     allDelegators[drep.drep_id] = delegators;
-//     console.log(`Added delegators of DREP ${drep.drep_id}. It has ${delegators.length} delegators assigned`)
-// }
-
-
-
-//   const getDelegatorsOf = async (drep_id: string) => {
-//     try{
-//         const response = await fetch(`https://cardano-mainnet.blockfrost.io/api/v0/governance/dreps/${drep_id}/delegators`, {
-//             headers: {
-//             Project_id: 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO'
-//             }
-//         })
-
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//         }
-      
-//         const data = await response.json();
-//         console.log(data);
-//     } catch (err) {
-//         console.error('Falló la búsqueda de los delegators del DREP: ' + drep_id)
-//     }
-//   }
-
-// const getVotesOf = (drep_id: string) => {
-
-// }

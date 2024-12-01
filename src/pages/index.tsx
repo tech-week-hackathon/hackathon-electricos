@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import { useWallet } from '@meshsdk/react';
 import { CardanoWallet } from '@meshsdk/react';
 import { useRouter } from 'next/router';
-import styles from './Home.module.css';
+import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
   const router = useRouter()
@@ -47,6 +47,22 @@ const Home: NextPage = () => {
               className={styles.button}
             >
               View DRep Votes
+            </button>
+          </section>
+        </div>
+        <div className={styles.thirdSection}>
+        <div className={styles.horizontalDivider}></div>
+        <section className={`${styles.section} ${styles.compareSection}`}>
+            <h2>Compare DReps</h2>
+            <p>
+              Compare two DReps side to side, and choose the one that
+              best represents your interests.
+            </p>
+            <button 
+              onClick={() => navigateTo('/comparedreps')}
+              className={styles.button}
+            >
+              Compare DReps
             </button>
           </section>
         </div>
