@@ -4,8 +4,8 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-start-rgb: 224, 231, 255;
+  --background-end-rgb: 255, 240, 245;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,9 +18,9 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(255, 255, 243);
-  height: 100vh;
-  width: 100vh;
+  background: linear-gradient(rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb))) fixed;
+  min-height: 100vh;
+  min-width: 100vh;
 }
 
 @layer utilities {

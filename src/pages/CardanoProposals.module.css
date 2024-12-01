@@ -1,169 +1,191 @@
-.form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    background-color: #ffffff;
-    padding: 1rem;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 100%;
-    margin: 1rem 0;
-
+.header {
+  height: 50px;
+  background-color: rgba(182, 182, 182, 0.182);
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.radioGroup {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
+.header nav {
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.radioLabel {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
+.header ul {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
-.radioInput {
-    accent-color: #0070f3;
+.header li:first-child {
+  margin-right: auto;
 }
 
-.submitButton {
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-left: 20px;
-    justify-content: space-between;
+.header button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: color 0.3s ease;
 }
 
-.submitButton:hover {
-    background-color: #005bb5;
+.header button:hover {
+  color: #0070f3;
 }
 
-.contents h1 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 1rem;
-}
-
-.contents h2 {
-    font-size: 1.25rem;
-    color: #333;
-    margin-bottom: 1rem;
-}
-
-.contents h3 {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 1rem;
-}
 
 .contents {
     max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 20px;
     font-family: Arial, sans-serif;
-    align-items: center;
-    justify-content: center;
-}
-
-.titleDiv {
+    margin-top: 5%;
+  }
+  
+  .titleDiv {
     text-align: center;
-    margin-bottom: 3rem;
-}
-
-.titleDiv h1 {
-    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+  
+  .titleDiv h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
     color: #333;
-}
-
-.proposalsContainer {
-    background-color: #f9f9f9;
+  }
+  
+  .connectWallet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .connectWallet h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .proposalsContainer {
+    background-color: #140d0d12;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-}
-
-.proposalsContainer ul {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    /* border: 1px solid black; */
+  }
+  
+  .proposalsContainer ul {
     list-style-type: none;
     padding: 0;
-}
-
-.proposalsContainer li {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 1.5rem 0;
-}
-
-.proposalsContainer li:last-child {
+  }
+  
+  .proposalsContainer li {
+    border-bottom: 1px solid #9f9f9f;
+    padding: 20px 0;
+  }
+  
+  .proposalsContainer li:last-child {
     border-bottom: none;
-}
-
-.proposalsContainer h2 {
-    color: #333;
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-}
-
-.proposalsContainer p {
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.proposalsContainer a {
-    color: #0070f3;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
-
-.proposalsContainer a:hover {
-    text-decoration: underline;
-}
-
-.proposalHeader {
+  }
+  
+  .proposalHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.proposalInfo {
-    flex: 1;
-}
-
-.proposalLink {
-    flex-shrink: 0;
-}
-
-.buttonsContainer {
+    margin-bottom: 15px;
+  }
+  
+  .proposalInfo h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .proposalInfo p {
+    font-size: 14px;
+    color: #000000;
+  }
+  
+  .proposalLink a {
+    color: #333;
+    text-decoration:underline;
+    font-size: 14px;
+  }
+  
+  .proposalLink a:hover {
+    text-decoration: underline;
+  }
+  
+  .form {
+    background-color: #a2a2a224;
+    border-radius: 20px;
+    padding: 15px;
+    margin-top: 15px;
+  }
+  
+  .buttonsContainer {
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-}
-
-.noProposals {
+  }
+  
+  .radioGroup {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .radioLabel {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  .radioInput {
+    margin-right: 5px;
+  }
+  
+  .submitButton {
+    background-color: #000000cc;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submitButton:hover {
+    background-color: #005bb5;
+  }
+  
+  .noProposals {
     text-align: center;
     color: #666;
     font-style: italic;
-}
-
-.proposalsContainer li {
-    padding-top: 40px;
-    padding-bottom: 40px;   
-}
-
-.connectWallet {
+    padding: 20px 0;
+  }
+  
+.proposalsContainerFooter{
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 2rem;
+    margin-top: 25px;
+}  
+
+.submitAllButton{
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }

@@ -3,6 +3,14 @@ import { CardanoWallet } from '@meshsdk/react';
 import { useState, useEffect, useRef } from 'react'
 import styles from './DReps.module.css'
 
+const navigateTo = (path: string) => {
+  window.location
+    ? window
+        .location
+        .assign(path)
+    : null;
+}
+
 // En dreps tenemos una lista de dreps.
 // Cada drep consiste de un drep_id y de un hex.
 
@@ -102,10 +110,32 @@ const DRepsPage = ({ dreps, proposals, error }) => {
     }
   
     return (
+      <>
+      <header className={styles.header}>
+        <nav>
+            <ul>
+                <li>
+                    <button onClick={() => navigateTo('/')}>Home</button>
+                </li>
+                <li>
+                    <button onClick={() => navigateTo('/cardanoproposals')}>Vote</button>
+                </li>
+                <li>
+                    <button onClick={() => navigateTo('/DReps')}>See DReps</button>
+                </li>
+            </ul>
+        </nav>
+    </header>
       <div className={styles.container}>
+        <div className={styles.title}>
+            <h1>DRep votes statistics</h1>
+        </div>
         <div className={styles.card}>
-            <div className={styles.cardContents}>
-          <h1 className={styles.title}>How do DReps Vote</h1>
+        <div className={styles.cardContents}>
+          <div className={styles.cardHeader}>
+            <h3>Search for DRep and Proposal</h3>
+            <p>Discover whether DReps votes align with the views of their delegators.</p>
+          </div>
   
           <div className={styles.inputGroup}>
             <label htmlFor="drep-select" className={styles.label}>Choose DRep</label>
@@ -190,7 +220,7 @@ const DRepsPage = ({ dreps, proposals, error }) => {
           {searchPerformed && votingResults && (
             <div className={styles.results}>
               <div className={styles.delegatorVotes}>
-                <span className={styles.label}>Delegators voted:</span>
+                <span className={`${styles.label} ${styles.votes}`}>Delegators votes:</span>
                 <div className={styles.voteBoxes}>
                   <div className={`${styles.voteBox} ${styles.green}`}>{votingResults.delegatorVotes.yes}</div>
                   <div className={`${styles.voteBox} ${styles.pink}`}>{votingResults.delegatorVotes.no}</div>
@@ -198,7 +228,7 @@ const DRepsPage = ({ dreps, proposals, error }) => {
                 </div>
               </div>
               <div className={styles.drepVote}>
-                <span className={styles.label}>DRep voted:</span>
+                <span className={`${styles.label} ${styles.votes}`}>DRep vote:</span>
                 <div className={styles.voteResult}>{votingResults.drepVote}</div>
               </div>
             </div>
@@ -206,7 +236,7 @@ const DRepsPage = ({ dreps, proposals, error }) => {
         </div>
         </div>
       </div>
-    )
+    </>)
   };
 
 

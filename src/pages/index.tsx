@@ -2,51 +2,57 @@ import { useState } from "react";
 import type { NextPage } from "next";
 import { useWallet } from '@meshsdk/react';
 import { CardanoWallet } from '@meshsdk/react';
+import { useRouter } from 'next/router';
+import styles from './Home.module.css';
 
 const Home: NextPage = () => {
-  const { connected, wallet } = useWallet();
-  const [assets, setAssets] = useState<null | any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter()
 
-  async function getAssets() {
-    if (wallet) {
-      setLoading(true);
-      const _assets = await wallet.getAssets();
-      setAssets(_assets);
-      setLoading(false);
-    }
+  const navigateTo = (path: string) => {
+    router.push(path)
   }
 
   return (
-    <div>
-      <h1>Connect Wallet</h1>
-      <CardanoWallet />
-      {connected && (
-        <>
-          <h1>Get Wallet Assets</h1>
-          {assets ? (
-            <pre>
-              <code className="language-js">
-                {JSON.stringify(assets, null, 2)}
-              </code>
-            </pre>
-          ) : (
-            <button
-              type="button"
-              onClick={() => getAssets()}
-              disabled={loading}
-              style={{
-                margin: "8px",
-                backgroundColor: loading ? "orange" : "grey",
-              }}
+    <main className={styles.main}>
+      <div className={styles.content}>
+        <h1 className={styles.title}>Welcome</h1>
+        
+        <div className={styles.sections}>
+          <section className={styles.section}>
+            <h2>Vote</h2>
+            <p>
+              Let your DRep know your opinion.
+              Tell us how you would vote to
+              each proposal.
+            </p>
+            <button 
+              onClick={() => navigateTo('/cardanoproposals')}
+              className={styles.button}
             >
-              Get Wallet Assets
+              Go to Vote
             </button>
-          )}
-        </>
-      )}
-    </div>
-  );
+          </section>
+
+          <div className={styles.divider}></div>
+
+          <section className={styles.section}>
+            <h2>See DReps</h2>
+            <p>
+              See if your (and any other) DRep
+              is following their delegators&apos;
+              advice. Let&apos;s hold them accountable.
+            </p>
+            <button 
+              onClick={() => navigateTo('/DReps')}
+              className={styles.button}
+            >
+              View DRep Votes
+            </button>
+          </section>
+        </div>
+      </div>
+    </main>
+  )
 };
 
 export default Home;
