@@ -26,7 +26,7 @@ const Home: NextPage = () => {
               each proposal.
             </p>
             <button 
-              onClick={() => navigateTo('/cardanoproposals')}
+              onClick={() => navigateTo('/cardanoproposals2')}
               className={styles.button}
             >
               Go to Vote

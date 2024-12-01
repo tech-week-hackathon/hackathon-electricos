@@ -1,14 +1,14 @@
+.abc{
+  display: flex;
+  flex-direction: column;
+}
+
 .header {
   height: 50px;
   background-color: rgba(182, 182, 182, 0.182);
   border-bottom: 1px solid #e0e0e0;
   padding: 0 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.abc{
-  display: flex;
-  flex-direction: column;
 }
 
 .header nav {
@@ -36,6 +36,7 @@
   border: none;
   font-size: 1rem;
   color: #333;
+  font-weight: bold;
   cursor: pointer;
   padding: 8px 16px;
   transition: color 0.3s ease;
@@ -45,9 +46,8 @@
   color: #0070f3;
 }
 
-
 .contents {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;

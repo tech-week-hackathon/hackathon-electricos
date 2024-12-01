@@ -284,7 +284,7 @@ const DRepsPage = ({ dreps, proposals, error }) => {
                     <button onClick={() => navigateTo('/')}>Home</button>
                 </li>
                 <li>
-                    <button onClick={() => navigateTo('/cardanoproposals')}>Vote</button>
+                    <button onClick={() => navigateTo('/cardanoproposals2')}>Vote</button>
                 </li>
                 <li>
                     <button onClick={() => navigateTo('/DReps')}>See DReps</button>
