@@ -56,7 +56,8 @@ const ProposalsPage = ({ proposals, error }) => {
     event.preventDefault()
     try {
       const walletAddress = (await wallet.getRewardAddresses())[0];
-      const objeto =  { wallet_address: walletAddress , proposal_tx_hash: tx_hash, vote: selectedOption[tx_hash] }
+      const walletAmount = (await wallet.getBalance())[0]['quantity']
+      const objeto =  { wallet_address: walletAddress , proposal_tx_hash: tx_hash, amount: walletAmount, vote: selectedOption[tx_hash] }
       console.log(objeto)
       const response = await fetch('/api/api', {
         method: 'POST',
@@ -86,10 +87,12 @@ const ProposalsPage = ({ proposals, error }) => {
     event.preventDefault();
     try {
       const walletAddress = (await wallet.getRewardAddresses())[0];
+      const walletAmount = (await wallet.getBalance())[0]['quantity']
       const promises = proposals.map(async (proposal) => {
         const objeto = {
           wallet_address: walletAddress,
           proposal_tx_hash: proposal.tx_hash,
+          amount: walletAmount,
           vote: selectedOption[proposal.tx_hash],
         };
         console.log(objeto);

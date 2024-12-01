@@ -2,6 +2,8 @@ import { useWallet } from '@meshsdk/react';
 import { CardanoWallet } from '@meshsdk/react';
 import { useState, useEffect, useRef } from 'react'
 import styles from './DReps.module.css'
+import { keepRelevant } from '@meshsdk/core';
+import { BlockfrostProvider, MeshTxBuilder } from "@meshsdk/core";
 
 const navigateTo = (path: string) => {
   window.location
@@ -18,6 +20,7 @@ const navigateTo = (path: string) => {
 //    - sus votos
 //    - sus delegators
 const DRepsPage = ({ dreps, proposals, error }) => {
+    const { connected, wallet } = useWallet();
     const [selectedDRep, setSelectedDRep] = useState("")
     const [selectedProposal, setSelectedProposal] = useState("")
     const [drepInput, setDrepInput] = useState("")
@@ -83,7 +86,54 @@ const DRepsPage = ({ dreps, proposals, error }) => {
     const handleProposalSelect = () => {
       setShowProposalDropdown(true)
     }
-  
+
+    const delegateFunc = async () => {
+      const blockchainProvider = new BlockfrostProvider('mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO');
+      // 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO'
+      // 'preprodZHwbgkKCMyH7DuWz87Ya9lWHMqrlfJBM'
+
+      const txBuilder = new MeshTxBuilder({
+        fetcher: blockchainProvider,
+        evaluator: blockchainProvider,
+        verbose: true,
+      });
+
+      //txBuilder.setNetwork("preprod")
+
+      const utxos = await wallet.getUtxos();
+      const rewardAddresses = await wallet.getRewardAddresses();
+      const rewardAddress = rewardAddresses[0];
+      const changeAddress = await wallet.getChangeAddress();
+      console.log(changeAddress)
+      const assetMap = new Map<Unit, Quantity>();
+      assetMap.set("lovelace", "5000000");
+      const selectedUtxos = keepRelevant(assetMap, utxos);
+
+      for (const utxo of selectedUtxos) {
+        txBuilder.txIn(
+          utxo.input.txHash,
+          utxo.input.outputIndex,
+          utxo.output.amount,
+          utxo.output.address,
+        );
+      }
+
+      console.log(selectedDRep)
+
+      txBuilder
+        .voteDelegationCertificate(
+          {
+            dRepId: selectedDRep,
+          },
+          rewardAddress,
+        )
+        .changeAddress(changeAddress);
+
+      const unsignedTx = await txBuilder.complete();
+      const signedTx = await wallet.signTx(unsignedTx);
+      const txHash = await wallet.submitTx(signedTx);
+    }    
+
     const handleSearch = async () => {
       // Here you would typically fetch the voting results based on selectedDRep and selectedProposal
       // For this example, we'll use mock data
@@ -235,6 +285,24 @@ const DRepsPage = ({ dreps, proposals, error }) => {
           )}
         </div>
         </div>
+
+        <div className={styles.connectWallet}>
+        <h2>Would you like to delegate to the selected DRep</h2>
+        <div className={styles.cardanoWallet}>
+        <CardanoWallet />
+        </div>
+        </div>
+        {connected && (
+        <>
+          <button 
+            className={styles.clearButton} 
+            onClick={delegateFunc}
+          >
+          Delegate
+          </button>
+        </>
+        )}
+
       </div>
     </>)
   };
