@@ -102,7 +102,6 @@ const CompareRepsPage = ({ dreps, proposals, error }) => {
       }
     
       const data = await response.json()
-      console.log(`Delegators of Drep ${drep_id}: ${JSON.stringify(data)}`)
       return data
     } catch (err) {
       console.error('Failed to fetch delegators for DREP: ' + drep_id)
@@ -112,19 +111,12 @@ const CompareRepsPage = ({ dreps, proposals, error }) => {
   const getVotesOfDelegators = async (delegators: Object[], proposal_tx_hash: string) => {
     const response = await fetch('/api/getVotes')
     const data = await response.json()
-    
-    console.log(`ALL VOTES: ${JSON.stringify(data)}`)
 
     const proposalVotes = data.filter(vote => vote.proposal_tx_hash === proposal_tx_hash)
-    console.log(`ONLY VOTES OF THIS PROPOSAL: ${JSON.stringify(proposalVotes)}`)
-    console.log(`DELEGATORS: ${JSON.stringify(delegators)}`)
 
     const listOfDelegatorsWalletAddresses = delegators.map(delegator => delegator.address)
-    console.log(`LIST OF WALLET ADDRESSES OF DELEGATORS: ${JSON.stringify(listOfDelegatorsWalletAddresses)}`)
 
     const delegatorVotes1 = proposalVotes.filter(vote => listOfDelegatorsWalletAddresses.includes(vote.wallet_address))
-
-    console.log(`ONLY VOTES OF THIS DREP DELEGATORS: ${JSON.stringify(delegatorVotes1)}`)
 
     const yesVotes = delegatorVotes1.filter(vote => vote.vote === "yes")
     const noVotes = delegatorVotes1.filter(vote => vote.vote === "no")
@@ -203,7 +195,6 @@ const CompareRepsPage = ({ dreps, proposals, error }) => {
     const rewardAddresses = await wallet.getRewardAddresses()
     const rewardAddress = rewardAddresses[0]
     const changeAddress = await wallet.getChangeAddress()
-    console.log(changeAddress)
     const assetMap = new Map<Unit, Quantity>()
     assetMap.set("lovelace", "5000000")
     const selectedUtxos = keepRelevant(assetMap, utxos)
