@@ -192,6 +192,7 @@ const handleInputChange = (tx_hash: string, value: string ) => {
                         <input
                           type="radio"
                           name="choice"
+                          required
                           value={option}
                           checked={selectedOption[proposal.tx_hash] === option}
                           onChange={(e) => handleInputChange(proposal.tx_hash, e.target.value)}
