@@ -51,6 +51,31 @@
   font-family: Arial, sans-serif;
 }
 
+.connectWalletContainer {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+  background-color: #140d0d12;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.connectWalletContainer h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 15px;
+}
+
+.connectWalletContainer p {
+  margin-top: 10px;
+}
+
 .title {
   font-size: 2.5rem;
   font-weight: bold;
@@ -200,6 +225,15 @@
   flex-direction: column;
   align-items: center;
 }
+
+.drepVote {
+  margin-right: 40px;
+}
+
+.delegatorVotes {
+  margin-left: 25px;
+}
+
 
 .voteBoxes {
   display: flex;

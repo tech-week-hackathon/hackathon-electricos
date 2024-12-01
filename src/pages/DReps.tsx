@@ -87,6 +87,121 @@ const DRepsPage = ({ dreps, proposals, error }) => {
       setShowProposalDropdown(true)
     }
 
+    const getDelegatorsOf = async (drep_id: string) => {
+      try{
+          const response = await fetch(`https://cardano-mainnet.blockfrost.io/api/v0/governance/dreps/${drep_id}/delegators`, {
+              headers: {
+              Project_id: 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO'
+              }
+          })
+    
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        
+          const data = await response.json();
+            console.log(`Delegators of Drep ${drep_id}: ${JSON.stringify(data)}`);
+          return data;
+      } catch (err) {
+          console.error('Falló la búsqueda de los delegators del DREP: ' + drep_id)
+      }
+    }
+
+
+    const getVotesOfDelegators = async (delegators: string[], proposal_tx_hash: string) => {
+      // Fetch the app api to get all the votes of a delegator.
+      const response = await fetch('/api/getVotes');
+      const data = await response.json();
+      
+      console.log(`ALL VOTES: ${JSON.stringify(data)}`);
+
+      // Filter the votes to get only the ones of the proposal.
+      const proposalVotes = data.filter(vote => vote.proposal_tx_hash === proposal_tx_hash);
+
+      const yesVotes = proposalVotes.filter(vote => vote.vote === "yes");
+      const noVotes = proposalVotes.filter(vote => vote.vote === "no");
+      const abstainVotes = proposalVotes.filter(vote => vote.vote === "abstain");
+
+      let delegatorVotes = {"yes": yesVotes.length, "no": noVotes.length, "abstain": abstainVotes.length};
+
+      return delegatorVotes;
+    }
+
+  
+    const handleSearch = async () => {
+      // Here you would typically fetch the voting results based on selectedDRep and selectedProposal
+      // For this example, we'll use mock data
+      const drep_id = selectedDRep;
+      const proposal_tx_hash = selectedProposal;
+      const delegators = await getDelegatorsOf(drep_id);
+
+
+      // Get the votes of the delegators for the proposal
+      const delegatorVotes = await getVotesOfDelegators(delegators, proposal_tx_hash);
+
+      console.log(`Votes of the delegators for the proposal ${proposal_tx_hash}: ${JSON.stringify(delegatorVotes)}`);
+
+
+      // GET /governance/dreps/{drep_id}/votes
+      // Get the vote of the DRep for that proposal using Blockfrost API
+      const url = `https://cardano-mainnet.blockfrost.io/api/v0/governance/dreps/${drep_id}/votes`;
+      const options = {method: 'GET', headers: {Project_id: 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO'}};
+
+      const response = await fetch(url, options);
+      const drepVotes = await response.json();
+      console.log(`DRep Votes: ${drepVotes}`);
+      const drepVotesString = JSON.stringify(drepVotes);
+      console.log(`DRep Votes: ${drepVotesString}`);
+
+
+      let drepVoteResult = -1;
+
+      // The drepVotes has the tx_hash of the vote, not the proposal.
+      for (let vote of drepVotes) {
+        const vote_tx_hash = vote.tx_hash;
+        const getTxUrl = `https://api.cardanoscan.io/api/v1/transaction?hash=${vote_tx_hash}`;
+        const headers = {
+          apiKey: '28917240-ce05-4a67-9f90-b6d1e9d8cad5'
+        };
+
+        const txResponse = await fetch(getTxUrl, { headers });
+        const txData = await txResponse.json();
+        console.log(`Transaction data of the DRep vote transaction: ${JSON.stringify(txData)}`);
+
+        // Get data.votingProcedures[0].votes.actionId:
+        const action_id = txData.votingProcedures[0].votes[0].actionId;
+        console.log(`Action ID / Proposal TX Hash: ${action_id}`);
+        console.log(`Comparing ${action_id} with ${proposal_tx_hash}`);
+
+        // Remove the last 2 characters from the action_id so it matches the proposal_tx_hash length (64)
+        const clean_action_id = action_id.slice(0, -2);
+
+        // Compare the action_id with the proposal_tx_hash
+        if (clean_action_id === proposal_tx_hash) {
+          console.log("Encontramos el voto del DREP para la propuesta.")
+          console.log(txData);
+          drepVoteResult = txData.votingProcedures[0].votes[0].vote;
+          break;
+      }
+    }
+
+      let drepVoteResultString = 'Did not vote';
+      if (drepVoteResult === 0) {
+        drepVoteResultString = 'No';
+      } else if (drepVoteResult === 1) {
+        drepVoteResultString = 'Yes';
+      } else if (drepVoteResult === 2) {
+        drepVoteResultString = 'Abstain';
+      }
+        
+
+      setSearchPerformed(true)
+      setVotingResults({
+        delegatorVotes: delegatorVotes,
+        drepVote: drepVoteResultString
+      })
+    }
+
     const delegateFunc = async () => {
       const blockchainProvider = new BlockfrostProvider('mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO');
       // 'mainnetH33gpqGTjsLKdcSNQmGCBiiieWsKIkoO'
@@ -133,16 +248,6 @@ const DRepsPage = ({ dreps, proposals, error }) => {
       const signedTx = await wallet.signTx(unsignedTx);
       const txHash = await wallet.submitTx(signedTx);
     }    
-
-    const handleSearch = async () => {
-      // Here you would typically fetch the voting results based on selectedDRep and selectedProposal
-      // For this example, we'll use mock data
-      setSearchPerformed(true)
-      setVotingResults({
-        delegatorVotes: { yes: 6, no: 1, abstain: 0 },
-        drepVote: 'yes'
-      })
-    }
 
     const handleClear = () => {
         // Clear the Drep and proposal inputs.
@@ -285,25 +390,30 @@ const DRepsPage = ({ dreps, proposals, error }) => {
           )}
         </div>
         </div>
+        <div className={styles.connectWalletContainer}>
+          <div className={styles.connectWallet}>
+            <h2>Would you like to delegate to the selected DRep?</h2>
+            <div className={styles.cardanoWallet}>
+            <CardanoWallet />
+            </div>
+          </div>
+          {connected && (
+          <>
+            <button 
+              className={styles.searchButton} 
+              onClick={delegateFunc}
+              disabled={!selectedDRep}
+            >
+            Delegate
+            </button>
+            {!selectedDRep && (
+              <p className={styles.error}>Please select a DRep to delegate to.</p>
+            )}
+          </>
+          )}
 
-        <div className={styles.connectWallet}>
-        <h2>Would you like to delegate to the selected DRep</h2>
-        <div className={styles.cardanoWallet}>
-        <CardanoWallet />
+          </div>
         </div>
-        </div>
-        {connected && (
-        <>
-          <button 
-            className={styles.clearButton} 
-            onClick={delegateFunc}
-          >
-          Delegate
-          </button>
-        </>
-        )}
-
-      </div>
     </>)
   };
 
