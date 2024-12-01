@@ -19,7 +19,7 @@ const Home: NextPage = () => {
         
         <div className={styles.sections}>
           <section className={styles.section}>
-            <h2>Vote</h2>
+            <h2>Sugggest your vote</h2>
             <p>
               Let your DRep know your opinion.
               Tell us how you would vote to
@@ -36,7 +36,7 @@ const Home: NextPage = () => {
           <div className={styles.divider}></div>
 
           <section className={styles.section}>
-            <h2>See DReps</h2>
+            <h2>See DReps Stats</h2>
             <p>
               See if your (and any other) DRep
               is following their delegators&apos;

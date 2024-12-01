@@ -100,7 +100,6 @@ const DRepsPage = ({ dreps, proposals, error }) => {
           }
         
           const data = await response.json();
-            console.log(`Delegators of Drep ${drep_id}: ${JSON.stringify(data)}`);
           return data;
       } catch (err) {
           console.error('Falló la búsqueda de los delegators del DREP: ' + drep_id)
@@ -112,22 +111,14 @@ const DRepsPage = ({ dreps, proposals, error }) => {
       // Fetch the app api to get all the votes of a delegator.
       const response = await fetch('/api/getVotes');
       const data = await response.json();
-      
-      console.log(`ALL VOTES: ${JSON.stringify(data)}`);
 
       // Filter the votes to get only the ones of the proposal.
       const proposalVotes = data.filter(vote => vote.proposal_tx_hash === proposal_tx_hash);
-      console.log(`ONLY VOTES OF THIS PROPOSAL: ${JSON.stringify(proposalVotes)}`)
-      console.log(`DELEGATORS: ${JSON.stringify(delegators)}`)
 
       // Fiter proposal votes so we only get the votes of the delegators.
       const listOfDelegatorsWalletAddresses = delegators.map(delegator => delegator.address);
-      console.log(`LIST OF WALLET ADDRESSES OF DELEGATORS: ${JSON.stringify(listOfDelegatorsWalletAddresses)}`)
-
 
       const delegatorVotes1 = proposalVotes.filter(vote => listOfDelegatorsWalletAddresses.includes(vote.wallet_address));
-
-      console.log(`ONLY VOTES OF THIS DREP DELEGATORS: ${JSON.stringify(delegatorVotes1)}` )
 
       const yesVotes = delegatorVotes1.filter(vote => vote.vote === "yes");
       const noVotes = delegatorVotes1.filter(vote => vote.vote === "no");
@@ -140,18 +131,12 @@ const DRepsPage = ({ dreps, proposals, error }) => {
 
   
     const handleSearch = async () => {
-      // Here you would typically fetch the voting results based on selectedDRep and selectedProposal
-      // For this example, we'll use mock data
       const drep_id = selectedDRep;
       const proposal_tx_hash = selectedProposal;
       const delegators = await getDelegatorsOf(drep_id);
 
-
       // Get the votes of the delegators for the proposal
       const delegatorVotes = await getVotesOfDelegators(delegators, proposal_tx_hash);
-
-      console.log(`Votes of the delegators for the proposal ${proposal_tx_hash}: ${JSON.stringify(delegatorVotes)}`);
-
 
       // GET /governance/dreps/{drep_id}/votes
       // Get the vote of the DRep for that proposal using Blockfrost API
@@ -160,10 +145,7 @@ const DRepsPage = ({ dreps, proposals, error }) => {
 
       const response = await fetch(url, options);
       const drepVotes = await response.json();
-      console.log(`DRep Votes: ${drepVotes}`);
       const drepVotesString = JSON.stringify(drepVotes);
-      console.log(`DRep Votes: ${drepVotesString}`);
-
 
       let drepVoteResult = -1;
 
@@ -177,20 +159,15 @@ const DRepsPage = ({ dreps, proposals, error }) => {
 
         const txResponse = await fetch(getTxUrl, { headers });
         const txData = await txResponse.json();
-        console.log(`Transaction data of the DRep vote transaction: ${JSON.stringify(txData)}`);
 
         // Get data.votingProcedures[0].votes.actionId:
         const action_id = txData.votingProcedures[0].votes[0].actionId;
-        console.log(`Action ID / Proposal TX Hash: ${action_id}`);
-        console.log(`Comparing ${action_id} with ${proposal_tx_hash}`);
 
         // Remove the last 2 characters from the action_id so it matches the proposal_tx_hash length (64)
         const clean_action_id = action_id.slice(0, -2);
 
         // Compare the action_id with the proposal_tx_hash
         if (clean_action_id === proposal_tx_hash) {
-          console.log("Encontramos el voto del DREP para la propuesta.")
-          console.log(txData);
           drepVoteResult = txData.votingProcedures[0].votes[0].vote;
           break;
       }
@@ -230,7 +207,6 @@ const DRepsPage = ({ dreps, proposals, error }) => {
       const rewardAddresses = await wallet.getRewardAddresses();
       const rewardAddress = rewardAddresses[0];
       const changeAddress = await wallet.getChangeAddress();
-      console.log(changeAddress)
       const assetMap = new Map<Unit, Quantity>();
       assetMap.set("lovelace", "5000000");
       const selectedUtxos = keepRelevant(assetMap, utxos);
@@ -243,8 +219,6 @@ const DRepsPage = ({ dreps, proposals, error }) => {
           utxo.output.address,
         );
       }
-
-      console.log(selectedDRep)
 
       txBuilder
         .voteDelegationCertificate(

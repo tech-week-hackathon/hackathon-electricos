@@ -16,7 +16,6 @@ export default function handler(
   res: NextApiResponse<Data>,
 ) {
   mockDatabase.push(req.body)
-  console.log(mockDatabase)
 
 
   const contents = `export const mockDatabase = ${JSON.stringify(mockDatabase, null, 2)}`;
@@ -24,18 +23,5 @@ export default function handler(
   fs.writeFileSync("./src/pages/api/data.ts", contents)
 
   
-  console.log("todo ok")
   res.status(200).json(mockDatabase);
 }
-
-
-/*
-(err) => {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log("todo piola")
-      }
-    }
-
-*/

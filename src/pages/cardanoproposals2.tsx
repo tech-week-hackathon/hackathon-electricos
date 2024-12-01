@@ -76,7 +76,6 @@ const ProposalsPage = ({ proposals, error }) => {
       const walletAddress = (await wallet.getRewardAddresses())[0];
       const walletAmount = (await wallet.getBalance())[0]['quantity']
       const objeto =  { wallet_address: walletAddress , proposal_tx_hash: tx_hash, amount: walletAmount, vote: selectedOption[tx_hash] }
-      console.log(objeto)
       const response = await fetch('/api/api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -87,7 +86,6 @@ const ProposalsPage = ({ proposals, error }) => {
         const updatedVotes = await response.json();
         setVotes((prevVotes) => {
           const newVotes = [...prevVotes, ...updatedVotes];
-          console.log('Vote submitted successfully:', newVotes);
           return newVotes;
         });
         setSelectedOption((prev) => ({
@@ -113,7 +111,6 @@ const ProposalsPage = ({ proposals, error }) => {
           amount: walletAmount,
           vote: selectedOption[proposal.tx_hash],
         };
-        console.log(objeto);
         return fetch('/api/api', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

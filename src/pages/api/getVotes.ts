@@ -15,7 +15,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-    console.log('GET /api/getVotes');
     // Return mockDatabase to the client.
     res.status(200).json(mockDatabase);
 }
